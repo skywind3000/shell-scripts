@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+_colorize_via_pygmentize() {
+    if [ ! -x "$(which pygmentize)" ]; then
+        echo "package \'Pygments\' is not installed!"
+        return -1
+    fi
+
+	local style="${PYGMENTS_STYLE:-monokai}"
+
+	if [[ $TERM != *256color* && $TERM != *rxvt* && $TERM != xterm* ]]; then
+		style=""
+	fi
+
+    if [ $# -eq 0 ]; then
+		if [ -n "$style" ]; then
+			pygmentize -P style=$style -P tabsize=4 -f terminal256 -g $@
+		else
+			pygmentize -P tabsize=4 -g $@
+		fi
+    fi
+
+    for NAME in $@; do
+		if [ -n "$style" ]; then
+			pygmentize -P style=$style -P tabsize=4 -f terminal256 -g "$NAME"
+		else
+			pygmentize -P tabsize=4 -g "$NAME"
+		fi
+    done
+}
+
+_colorize_via_pygmentize "$@"
